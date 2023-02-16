@@ -1,85 +1,99 @@
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
-public class Lab3{
-    
+
+public class Lab3 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        int[] arr = getArray(sc);
         
+        System.out.println("Enter the size of the array: ");
+        int size = sc.nextInt();
+        
+        int[] arr = new int[size];
+
+
+        
+        for (int i = 0; i < size; i++) {
+            System.out.print("Enter element " + (i+1) + ": ");
+            arr[i] = sc.nextInt();
+        }
+        
+        System.out.println("The array you entered is: ");
+        for (int i = 0; i < size; i++) {
+            System.out.print(arr[i] + " ");
+        }
         while (true) {
-            showMenu();
-            int choice = sc.nextInt();
-            switch (choice) {
+            System.out.println("Choose an option:");
+            System.out.println("1. Find the mean");
+            System.out.println("2. Find the median");
+            System.out.println("3. Find the mode");
+            System.out.println("4. Exit");
+            int option = sc.nextInt();
+            switch (option) {
                 case 1:
-                    System.out.printf("Mean: %.2f\n", computeMean(arr));
+                    double mean = getMean(arr);
+                    System.out.println("Mean of the array is " + mean);
                     break;
                 case 2:
-                    System.out.printf("Median: %.2f\n", computeMedian(arr));
+                    double median = getMedian(arr);
+                    System.out.println("Median of the array is " + median);
                     break;
                 case 3:
-                    System.out.printf("Mode: %d\n", computeMode(arr));
+                    int mode = getMode(arr);
+                    System.out.println("Mode of the array is " + mode);
                     break;
                 case 4:
                     System.exit(0);
+                    break;
                 default:
-                    System.out.println("Invalid choice, please try again.");
+                    System.out.println("Your Choice is invalid. Please select option again.");
             }
         }
     }
-    
-    public static int[] getArray(Scanner sc) {
-        System.out.print("Enter array size: ");
-        int size = sc.nextInt();
-        int[] arr = new int[size];
-        for (int i = 0; i < size; i++) {
-            System.out.printf("Enter element %d: ", i + 1);
-            arr[i] = sc.nextInt();
-        }
-        return arr;
-    }
-    
-    public static void showMenu() {
-        System.out.println("1. Compute Mean");
-        System.out.println("2. Compute Median");
-        System.out.println("3. Compute Mode");
-        System.out.println("4. Exit");
-        System.out.print("Enter your choice: ");
-    }
-    
-    public static double computeMean(int[] arr) {
+
+    public static double getMean(int[] arr) {
         int sum = 0;
-        for (int num : arr) {
-            sum += num;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
         }
-        return (double) sum / arr.length;
+        double mean = (double) sum / arr.length;
+        return mean;
     }
-    
-    public static double computeMedian(int[] arr) {
+
+    public static double getMedian(int[] arr) {
         Arrays.sort(arr);
         int mid = arr.length / 2;
         if (arr.length % 2 == 0) {
-            return (double) (arr[mid - 1] + arr[mid]) / 2;
+            double median = (double) (arr[mid - 1] + arr[mid]) / 2;
+            return median;
         } else {
-            return (double) arr[mid];
+            double median = arr[mid];
+            return median;
         }
     }
-    
-    public static int computeMode(int[] arr) {
+
+    public static int getMode(int[] arr) {
+        Arrays.sort(arr);
         int mode = arr[0];
         int maxCount = 0;
-        for (int i = 0; i < arr.length; i++) {
-            int count = 1;
-            for (int j = i + 1; j < arr.length; j++) {
-                if (arr[i] == arr[j]) {
-                    count++;
+        int currentCount = 1;
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] == arr[i - 1]) {
+                currentCount++;
+            } else {
+                if (currentCount > maxCount) {
+                    maxCount = currentCount;
+                    mode = arr[i - 1];
                 }
-            }
-            if (count > maxCount) {
-                mode = arr[i];
-                maxCount = count;
+                currentCount = 1;
             }
         }
+        if (currentCount > maxCount) {
+            maxCount = currentCount;
+            mode = arr[arr.length - 1];
+        }
         return mode;
+
+
     }
+
 }
