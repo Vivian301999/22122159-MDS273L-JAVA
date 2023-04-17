@@ -1,134 +1,253 @@
-// Create a new folder in git named 'Lab 7' for the following question and solve the following: create a flowchart and document the results, constraints, etc., in the README.md file for the lab.
-
-// Given the famous iris dataset, find the 5-point summary [Mean, Median, Mode, Min, Max] for the attributes: SepalLengthCm, SepalWidthCm, PetalLengthCm, PetalWidthCm.
-
-// Once the overall summary statistics have been calculated, identify the summary statistics for each Species of iris flower [Iris-setosa, Iris-versicolor, Iris-virginica].
-
-// Present your results in the appropriate format and write the results in a file.
-
-
-
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-public class lab7{
-
-    // public class Statistics{
-    //     public static Double getMean(List<Double> data){
-    //         return data.stream().mapToDouble(Double::doubleValue).average().orElse(Double.NaN);
-    //     }
-    //     public static Double getMedian(List<Double> data){
-    //         Collections.sort(data);
-    //         int middle= data.size() / 2;
-    //         return data.size() % 2 == 0? (data.get(middle-1) + data.get(middle)) / 2.0: data.get(middle);
+import java.util.Arrays;
+import java.io.FileWriter;  
 
 
-
-    //     }
-    //     public static Double getMode(List<Double> data){
-    //         Map<Double, Integer> frequencies = new HashMap<>();
-    //         for(Double value: data){
-    //             frequencies.put(value, frequencies.getOrDefault(value, 0) + 1);
-
-    //         }
-    //         Double mode= null;
-    //         int maxFrequency= 0;
-    //         for(Map.Entry<Double, Integer> entry : frequencies.entrySet()){
-    //             if (entry.getValue() > maxFrequency){
-    //                 mode = entry.getKey();
-    //                 maxFrequency = entry.getValue();
-    //             }
-
-    //         }
-    //         return mode;
-
-    //     }
-    //     public static Double getMin(List<Double> data){ 
-
-    //         return Collections.min(data);
-    //     }
-    //     public static Double getMax(List<Double> data){
-    //         return Collections.max(data);
+public class lab7_code {
+    public static Double mean_arr(Double[] arr) {
+        Double arr_count = 0.0;
+        for (int i = 0; i < arr.length; i++) {  
+            arr_count += arr[i];                // Counting the sum of the array
         }
-    //}
+        return  arr_count / arr.length;   // Finding mean by dividing sum with length
+    
+  }
+
+  public static Double median_arr(Double[] arr) {
+    Arrays.sort(arr);
+    int mid = arr.length / 2;  // Finding the middle element
+        if(arr.length % 2 == 0) {
+            return  (arr[mid - 1] + arr[mid]) / 2; // If the number of elements are even then formula is arr[mid - 1] + arr[mid]) / 2
+        } else {
+            return arr[mid]; // If odd then return the middle element.
+        }
+    } 
+
+
+
+    public static Double mode_arr(Double[] arr) {
+        int max_occur = 0;
+        Double mode = 0.0;
+        for(int i =0;i<arr.length;i++){
+            int count = 0;
+            for (int j = 0; j < arr.length; j++) {
+                if (arr[j] == arr[i]) { // getting the count of every number in the array.
+                    count++;
+                }
+            }
+            if(count>max_occur){
+                max_occur = count;
+                mode = arr[i];      // Assigning mode if the count is greater than maximum occur of a particular element
+                
+    
+            }
+        }
+        return mode;
+      }
+
     public static void main(String[] args) {
 
-        String csvFile = "C:/Users/vivian/Downloads/Iris.csv";
+        String csvFile = "Iris.csv";
         String line = "";
-        String csvSplitBy = ",";
+        String csvDelimiter = ",";
+        int numRows = 151;
+        int numCols = 5;
 
-        ArrayList<Double> sepalLengthList = new ArrayList<Double>();
+        // Initialize 2D array to hold CSV data
+        String[][] data = new String[numRows][numCols];
+        Double[] SepalLength = new Double[150];
+        Double[] SepalWidth = new Double[150];
+        Double[] PetalLength = new Double[150];
+        Double[] PetalWidth = new Double[150];
+        
+        Double[] SepalLength_setosa = new Double[50];
+        Double[] SepalLength_versicolor = new Double[50];
+        Double[] SepalLength_virginica = new Double[50];
+        
+        Double[] SepalWidth_setosa = new Double[50];
+        Double[] SepalWidth_versicolor = new Double[50];
+        Double[] SepalWidth_virginica = new Double[50];
+
+        Double[] PetalLength_setosa = new Double[50];
+        Double[] PetalLength_versicolor = new Double[50];
+        Double[] PetalLength_virginica = new Double[50];
+
+        Double[] PetalWidth_setosa = new Double[50];
+        Double[] PetalWidth_versicolor = new Double[50];
+        Double[] PetalWidth_virginica = new Double[50];
+
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
 
-            while ((line = br.readLine()) != null) {
-
-                String[] iris = line.split(csvSplitBy);
-
-                double sepalLength = Double.parseDouble(iris[0]);
-
-                sepalLengthList.add(sepalLength);
+            int rowIndex = 0;
+            while ((line = br.readLine()) != null && rowIndex < numRows) {   // Reading all the rows
+                String[] values = line.split(csvDelimiter);                 // Splitting every row by ","
+                if (values.length >= numCols) {
+                    for (int colIndex = 0; colIndex < numCols; colIndex++) {
+                        data[rowIndex][colIndex] = values[colIndex];           // Initialising the splitted elements into 2d array
+                    }
+                    rowIndex++;
+                }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Calculate mean
-        double sum = 0;
-        for (double sepalLength : sepalLengthList) {
-            sum += sepalLength;
-        }
-        double mean = sum / sepalLengthList.size();
-        System.out.println("Mean: " + mean);
-
-        // Calculate median
-        Collections.sort(sepalLengthList);
-        double median;
-        int middle = sepalLengthList.size() / 2;
-        if (sepalLengthList.size() % 2 == 0) {
-            median = (sepalLengthList.get(middle - 1) + sepalLengthList.get(middle)) / 2;
-        } else {
-            median = sepalLengthList.get(middle);
-        }
-        System.out.println("Median: " + median);
-
-        // Calculate mode
-        double mode = sepalLengthList.get(0);
-        int maxCount = 0;
-        for (double sepalLength : sepalLengthList) {
-            int count = 0;
-            for (double innerSepalLength : sepalLengthList) {
-                if (innerSepalLength == sepalLength) {
-                    count++;
+        int sepc = 0;
+        int sc = 0,vcc = 0,vc = 0;
+        for (int i = 1; i < numRows; i++) {
+                SepalLength[sepc] = Double.parseDouble(data[i][0]);
+                SepalWidth[sepc] = Double.parseDouble(data[i][1]);
+                PetalLength[sepc] = Double.parseDouble(data[i][2]);
+                PetalWidth[sepc] = Double.parseDouble(data[i][3]);
+                sepc += 1;
+                if(i>=1 && i<=50){
+                    SepalLength_setosa[sc] = Double.parseDouble(data[i][0]);
+                    SepalWidth_setosa[sc] = Double.parseDouble(data[i][1]);
+                    PetalLength_setosa[sc] = Double.parseDouble(data[i][2]);
+                    PetalWidth_setosa[sc] = Double.parseDouble(data[i][3]);
+                    sc += 1;
                 }
-            }
-            if (count > maxCount) {
-                maxCount = count;
-                mode = sepalLength;
-            }
+                else if(i>=51 && i <= 100){
+                    SepalLength_versicolor[vcc] = Double.parseDouble(data[i][0]);
+                    SepalWidth_versicolor[vcc] = Double.parseDouble(data[i][1]);
+                    PetalLength_versicolor[vcc] = Double.parseDouble(data[i][2]);
+                    PetalWidth_versicolor[vcc] = Double.parseDouble(data[i][3]);
+                    vcc +=1 ;
+                }
+                else if(i>=101 && i <= 150){
+                    SepalLength_virginica[vc] = Double.parseDouble(data[i][0]);
+                    SepalWidth_virginica[vc] = Double.parseDouble(data[i][1]);
+                    PetalLength_virginica[vc] = Double.parseDouble(data[i][2]);
+                    PetalWidth_virginica[vc] = Double.parseDouble(data[i][3]);
+                    vc += 1;
+                }
+
         }
-        System.out.println("Mode: " + mode);
+
+
+        try {
+            FileWriter writer = new FileWriter("summary.txt");
+
+            writer.write("Mean of Sepal length: "+mean_arr(SepalLength) + "\n");
+            writer.write("Mean of Sepal Width: "+mean_arr(SepalWidth)+ "\n");
+            writer.write("Mean of Petal length: "+mean_arr(PetalLength)+ "\n");
+            writer.write("Mean of Petal Width: "+mean_arr(PetalWidth)+ "\n");
+            writer.write("\n");
+            writer.write("Median of Sepal length: "+median_arr(SepalLength) + "\n");
+            writer.write("Median of Sepal Width: "+median_arr(SepalWidth)+ "\n");
+            writer.write("Median of Petal length: "+median_arr(PetalLength)+ "\n");
+            writer.write("Median of Petal Width: "+median_arr(PetalWidth)+ "\n");
+            writer.write("\n");
+            writer.write("Mode of Sepal length: "+mode_arr(SepalLength) + "\n");
+            writer.write("Mode of Sepal Width: "+mode_arr(SepalWidth)+ "\n");
+            writer.write("Mode of Petal length: "+mode_arr(PetalLength)+ "\n");
+            writer.write("Mode of Petal Width: "+mode_arr(PetalWidth)+ "\n");
+            writer.write("\n");
+            writer.write("Maximum of Sepal length: "+maximum(SepalLength) + "\n");
+            writer.write("Maximum of Sepal Width: "+maximum(SepalWidth)+ "\n");
+            writer.write("Maximum of Petal length: "+maximum(PetalLength)+ "\n");
+            writer.write("Maximum of Petal Width: "+maximum(PetalWidth)+ "\n");
+            writer.write("\n");
+            writer.write("Minimum of Sepal length: "+minimum(SepalLength) + "\n");
+            writer.write("Minimum of Sepal Width: "+minimum(SepalWidth)+ "\n");
+            writer.write("Minimum of Petal length: "+minimum(PetalLength)+ "\n");
+            writer.write("Minimum of Petal Width: "+minimum(PetalWidth)+ "\n");
+            writer.write("\n");
+
+            writer.write("-------------------Statistics for setosa-------------------"+"\n");
+            writer.write("Mean of Sepal length: "+mean_arr(SepalLength_setosa) + "\n");
+            writer.write("Mean of Sepal Width: "+mean_arr(SepalWidth_setosa)+ "\n");
+            writer.write("Mean of Petal length: "+mean_arr(PetalLength_setosa)+ "\n");
+            writer.write("Mean of Petal Width: "+mean_arr(PetalWidth_setosa)+ "\n");
+            writer.write("\n");
+            writer.write("Median of Sepal length: "+median_arr(SepalLength_setosa) + "\n");
+            writer.write("Median of Sepal Width: "+median_arr(SepalWidth_setosa)+ "\n");
+            writer.write("Median of Petal length: "+median_arr(PetalLength_setosa)+ "\n");
+            writer.write("Median of Petal Width: "+median_arr(PetalWidth_setosa)+ "\n");
+            writer.write("\n");
+            writer.write("Mode of Sepal length: "+mode_arr(SepalLength_setosa) + "\n");
+            writer.write("Mode of Sepal Width: "+mode_arr(SepalWidth_setosa)+ "\n");
+            writer.write("Mode of Petal length: "+mode_arr(PetalLength_setosa)+ "\n");
+            writer.write("Mode of Petal Width: "+mode_arr(PetalWidth_setosa)+ "\n");
+            writer.write("\n");
+            writer.write("Maximum of Sepal length: "+maximum(SepalLength_setosa) + "\n");
+            writer.write("Maximum of Sepal Width: "+maximum(SepalWidth_setosa)+ "\n");
+            writer.write("Maximum of Petal length: "+maximum(PetalLength_setosa)+ "\n");
+            writer.write("Maximum of Petal Width: "+maximum(PetalWidth_setosa)+ "\n");
+            writer.write("\n");
+            writer.write("Minimum of Sepal length: "+minimum(SepalLength_setosa) + "\n");
+            writer.write("Minimum of Sepal Width: "+minimum(SepalWidth_setosa)+ "\n");
+            writer.write("Minimum of Petal length: "+minimum(PetalLength_setosa)+ "\n");
+            writer.write("Minimum of Petal Width: "+minimum(PetalWidth_setosa)+ "\n");
+            writer.write("\n");
+
+            writer.write("-------------------Statistics for Versicolor-------------------"+"\n");
+            writer.write("Mean of Sepal length: "+mean_arr(SepalLength_versicolor) + "\n");
+            writer.write("Mean of Sepal Width: "+mean_arr(SepalWidth_versicolor)+ "\n");
+            writer.write("Mean of Petal length: "+mean_arr(PetalLength_versicolor)+ "\n");
+            writer.write("Mean of Petal Width: "+mean_arr(PetalWidth_versicolor)+ "\n");
+            writer.write("\n");
+            writer.write("Median of Sepal length: "+median_arr(SepalLength_versicolor) + "\n");
+            writer.write("Median of Sepal Width: "+median_arr(SepalWidth_versicolor)+ "\n");
+            writer.write("Median of Petal length: "+median_arr(PetalLength_versicolor)+ "\n");
+            writer.write("Median of Petal Width: "+median_arr(PetalWidth_versicolor)+ "\n");
+            writer.write("\n");
+            writer.write("Mode of Sepal length: "+mode_arr(SepalLength_versicolor) + "\n");
+            writer.write("Mode of Sepal Width: "+mode_arr(SepalWidth_versicolor)+ "\n");
+            writer.write("Mode of Petal length: "+mode_arr(PetalLength_versicolor)+ "\n");
+            writer.write("Mode of Petal Width: "+mode_arr(PetalWidth_versicolor)+ "\n");
+            writer.write("\n");
+            writer.write("Maximum of Sepal length: "+maximum(SepalLength_versicolor) + "\n");
+            writer.write("Maximum of Sepal Width: "+maximum(SepalWidth_versicolor)+ "\n");
+            writer.write("Maximum of Petal length: "+maximum(PetalLength_versicolor)+ "\n");
+            writer.write("Maximum of Petal Width: "+maximum(PetalWidth_versicolor)+ "\n");
+            writer.write("\n");
+            writer.write("Minimum of Sepal length: "+minimum(SepalLength_versicolor) + "\n");
+            writer.write("Minimum of Sepal Width: "+minimum(SepalWidth_versicolor)+ "\n");
+            writer.write("Minimum of Petal length: "+minimum(PetalLength_versicolor)+ "\n");
+            writer.write("Minimum of Petal Width: "+minimum(PetalWidth_versicolor)+ "\n");
+            writer.write("\n");
+
+            writer.write("-------------------Statistics for Virginica-------------------"+"\n");
+            writer.write("Mean of Sepal length: "+mean_arr(SepalLength_virginica) + "\n");
+            writer.write("Mean of Sepal Width: "+mean_arr(SepalWidth_virginica)+ "\n");
+            writer.write("Mean of Petal length: "+mean_arr(PetalLength_virginica)+ "\n");
+            writer.write("Mean of Petal Width: "+mean_arr(PetalWidth_virginica)+ "\n");
+            writer.write("\n");
+            writer.write("Median of Sepal length: "+median_arr(SepalLength_virginica) + "\n");
+            writer.write("Median of Sepal Width: "+median_arr(SepalWidth_virginica)+ "\n");
+            writer.write("Median of Petal length: "+median_arr(PetalLength_virginica)+ "\n");
+            writer.write("Median of Petal Width: "+median_arr(PetalWidth_virginica)+ "\n");
+            writer.write("\n");
+            writer.write("Mode of Sepal length: "+mode_arr(SepalLength_virginica) + "\n");
+            writer.write("Mode of Sepal Width: "+mode_arr(SepalWidth_virginica)+ "\n");
+            writer.write("Mode of Petal length: "+mode_arr(PetalLength_virginica)+ "\n");
+            writer.write("Mode of Petal Width: "+mode_arr(PetalWidth_virginica)+ "\n");
+            writer.write("\n");
+            writer.write("Maximum of Sepal length: "+maximum(SepalLength_virginica) + "\n");
+            writer.write("Maximum of Sepal Width: "+maximum(SepalWidth_virginica)+ "\n");
+            writer.write("Maximum of Petal length: "+maximum(PetalLength_virginica)+ "\n");
+            writer.write("Maximum of Petal Width: "+maximum(PetalWidth_virginica)+ "\n");
+            writer.write("\n");
+          
+            writer.write("Minimum of Sepal length: "+minimum(SepalLength_virginica) + "\n");
+            writer.write("Minimum of Sepal Width: "+minimum(SepalWidth_virginica)+ "\n");
+            writer.write("Minimum of Petal length: "+minimum(PetalLength_virginica)+ "\n");
+            writer.write("Minimum of Petal Width: "+minimum(PetalWidth_virginica)+ "\n");
+            writer.write("\n");
+
+            writer.close();
+            
+          } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+          }
+
+
+        
 
     }
 }
-        //throws IOException{
-    //     String csvFilePath= "C:/Users/vivian/Downloads/Iris.csv";
-
-    //     CSVParser csvParser= CSVParser.parse(new File(csvFilePath), CSVFormat.DEFAULT.withHeader());
-    //     for(CSVRecord record: csvParser){
-    //         String species= record.get("Species");
-    //         Double sepalLenght= Double.valueOf(record.get("SepalLengthCm"));
-    //         Double sepalWidth= Double.valueOf(record.get("SepalWidthCm"));
-    //         Double petalLenght= Double.valueOf(record.get("PetalLengthCm"));
-    //         Double petalWidth= Double.valueOf(record.get("PetalWidthCm"));
-
-
-
-    //     }
-    // }
-
